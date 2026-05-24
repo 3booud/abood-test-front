@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drop4Life — Central Blood Bank</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN (ENGLISH) ============ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon"><i class="fas fa-tint"></i></div>
+      <h2>Drop4Life</h2>
+    </div>
+    <p class="login-sub">Welcome to the Central Blood Bank System</p>
+    <div class="login-form">
+      <div class="field">
+        <i class="fas fa-user"></i>
+        <input type="text" id="login-user" placeholder="Username" autocomplete="username">
+      </div>
+      <div class="field">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="login-pass" placeholder="Password" autocomplete="current-password" onkeypress="if(event.key === 'Enter') attemptLogin()">
+      </div>
+      <div id="login-error">Invalid credentials</div>
+      <button onclick="attemptLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+    </div>
+    <div class="login-hint">
+      <b>Quick Demo Access</b>
+      • Super Admin: <code>admin / admin123</code><br>
+      • Deputy: <code>deputy / deputy123</code><br>
+      • Lab Admin: <code>lab / lab123</code>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MAIN APP ============ -->
+<div id="main-app" style="display:none; width:100%;">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon"><i class="fas fa-tint"></i></div>
+    <div class="logo-text">
+      <h1>Drop4Life</h1>
+      <span>نظام بنك الدم المركزي</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">الرئيسية</div>
+    <div class="nav-item active" data-nav="dashboard" onclick="navigate('dashboard', this)"><i class="fas fa-th-large"></i> لوحة التحكم</div>
+    <div class="nav-item"        data-nav="insights"  onclick="navigate('insights', this)"><i class="fas fa-brain"></i> تحليلات ذكية<span class="nav-badge">جديد</span></div>
+    <div class="nav-item"        data-nav="inventory" onclick="navigate('inventory', this)"><i class="fas fa-vials"></i> المخزون<span class="nav-badge">8</span></div>
+
+    <div class="nav-section-label">إدارة التبرع</div>
+    <div class="nav-item" data-nav="donors"            onclick="navigate('donors', this)"><i class="fas fa-users"></i> المتبرعون</div>
+    <div class="nav-item" data-nav="donation-sessions" onclick="navigate('donation-sessions', this)"><i class="fas fa-calendar-check"></i> جلسات التبرع</div>
+    <div class="nav-item" data-nav="screening"         onclick="navigate('screening', this)"><i class="fas fa-microscope"></i> الفحص والتحليل</div>
+
+    <div class="nav-section-label">المستشفيات</div>
+    <div class="nav-item" data-nav="requests"     onclick="navigate('requests', this)"><i class="fas fa-hospital"></i> طلبات الدم<span class="nav-badge">3</span></div>
+    <div class="nav-item" data-nav="distribution" onclick="navigate('distribution', this)"><i class="fas fa-truck"></i> التوزيع والشحن</div>
+
+    <div class="nav-section-label">الأدوات</div>
+    <div class="nav-item" data-nav="compatibility" onclick="navigate('compatibility', this)"><i class="fas fa-random"></i> توافق فصائل الدم</div>
+    <div class="nav-item" data-nav="reports"       onclick="navigate('reports', this)"><i class="fas fa-chart-bar"></i> التقارير</div>
+    <div class="nav-item" data-nav="settings"      onclick="navigate('settings', this)"><i class="fas fa-cog"></i> الإعدادات</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card-small" onclick="navigate('settings', document.querySelector('[data-nav=settings]'))">
+      <div class="user-avatar-sm">ع</div>
+      <div class="user-info-sm">
+        <h4 id="current-user-name">د. عبدالرحمن عبدالله علي</h4>
+        <span id="current-user-role">مدير بنك الدم</span>
+      </div>
+      <i class="fas fa-ellipsis-h" style="color: var(--text-muted); margin-right: auto; font-size: 14px;"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-right">
+      <button class="topbar-btn mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="topbar-search">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="البحث في النظام...">
+      </div>
+      <button class="emergency-btn" onclick="showModal('emergency-modal')">
+        <i class="fas fa-exclamation-triangle"></i> طوارئ دم
+      </button>
+    </div>
+    <div class="topbar-left">
+      <button class="topbar-btn" onclick="toggleLanguage()" title="تغيير اللغة"><i class="fas fa-language"></i></button>
+      <button class="topbar-btn" onclick="toggleDarkMode()" title="الوضع الليلي"><i class="fas fa-moon"></i></button>
+
+      <!-- CHAT -->
+      <div class="notif-dropdown" id="chat-dropdown">
+        <button class="topbar-btn" onclick="toggleChatMenu()">
+          <i class="fas fa-comments"></i>
+          <span class="notif-dot chat-dot" id="global-chat-dot"></span>
+        </button>
+        <div class="notif-menu" id="chat-menu">
+          <div class="notif-header"><h4>رسائل الطاقم</h4></div>
+          <div class="notif-list" id="chat-messages" style="max-height:280px; display:flex; flex-direction:column; gap:8px; padding:12px;">
+            <div style="background:var(--bg-elevated); padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+              <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">د. عبدالرحمن عبدالله علي (Super Admin)</div>
+              <div style="font-size:12px; color:var(--text-primary);">يُرجى الانتباه لوجود نقص في فصيلة AB-، أرسلوا طلبات لحملات التبرع.</div>
+              <div style="font-size:10px; color:var(--text-muted); margin-top:4px; text-align:left;">10:30 ص</div>
+            </div>
+          </div>
+          <div style="padding:12px; border-top:1px solid var(--border); display:flex; gap:8px; background:var(--bg-main);">
+            <input type="text" id="chat-input" class="form-control" style="padding:6px 10px; font-size:12px;" placeholder="اكتب رسالة للجميع..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+            <button class="btn btn-primary btn-sm" style="padding:6px 12px;" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div class="notif-dropdown">
+        <button class="topbar-btn" onclick="toggleNotifMenu()">
+          <i class="fas fa-bell"></i>
+          <span class="notif-dot" id="global-notif-dot"></span>
+        </button>
+        <div class="notif-menu" id="notif-menu">
+          <div class="notif-header">
+            <h4>الإشعارات</h4>
+            <span class="notif-mark-read" onclick="markNotifsRead()">تحديد كمقروء</span>
+          </div>
+          <div class="notif-list">
+            <div class="notif-item unread" onclick="navigate('requests', document.querySelector('[data-nav=requests]')); toggleNotifMenu()">
+              <div class="notif-icon-box" style="background: linear-gradient(135deg, var(--danger), #991B1B);"><i class="fas fa-exclamation-triangle"></i></div>
+              <div class="notif-text"><h5>طلب طارئ: مستشفى الشرق</h5><p>مطلوب 4 وحدات AB- بشكل فوري لحالة حرجة في العمليات.</p><div class="notif-time">منذ 5 دقائق</div></div>
+            </div>
+            <div class="notif-item unread" onclick="navigate('inventory', document.querySelector('[data-nav=inventory]')); toggleNotifMenu()">
+              <div class="notif-icon-box" style="background: linear-gradient(135deg, var(--warning), #92400E);"><i class="fas fa-vial"></i></div>
+              <div class="notif-text"><h5>تحذير: نقص مخزون</h5><p>رصيد فصيلة O- انخفض عن الحد الأدنى (المتبقي: 63 وحدة).</p><div class="notif-time">منذ 35 دقيقة</div></div>
+            </div>
+            <div class="notif-item" onclick="navigate('distribution', document.querySelector('[data-nav=distribution]')); toggleNotifMenu()">
+              <div class="notif-icon-box" style="background: linear-gradient(135deg, var(--success), #065F46);"><i class="fas fa-truck"></i></div>
+              <div class="notif-text"><h5>تم تسليم الشحنة</h5><p>وصلت شحنة الدم #SH-0920 إلى مركز القلب الدولي بنجاح.</p><div class="notif-time">منذ ساعتين</div></div>
+            </div>
+          </div>
+          <div class="notif-footer">عرض كل الإشعارات</div>
+        </div>
+      </div>
+
+      <!-- USER -->
+      <div class="user-dropdown">
+        <div class="user-dropdown-toggle" onclick="toggleUserMenu()">
+          <div class="user-avatar-sm" style="width:36px; height:36px;">ع</div>
+          <i class="fas fa-chevron-down" style="font-size: 10px; color: var(--text-muted);"></i>
+        </div>
+        <div class="user-dropdown-menu" id="user-menu">
+          <div class="user-dropdown-header">
+            <h4 id="menu-user-name">د. عبدالرحمن عبدالله علي</h4>
+            <span id="menu-user-role">مدير بنك الدم</span>
+          </div>
+          <div class="user-dropdown-divider"></div>
+          <a class="user-dropdown-item" onclick="navigate('settings', document.querySelector('[data-nav=settings]')); toggleUserMenu()"><i class="fas fa-user-circle"></i> الملف الشخصي</a>
+          <a class="user-dropdown-item" onclick="navigate('settings', document.querySelector('[data-nav=settings]')); toggleUserMenu()"><i class="fas fa-cog"></i> الإعدادات</a>
+          <div class="user-dropdown-divider"></div>
+          <a class="user-dropdown-item text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== PAGES =================== -->
+  <div class="page-content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="page active" id="page-dashboard">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title">لوحة التحكم الرئيسية</h2>
+          <p class="section-sub">آخر تحديث: اليوم، ٢:٣٠ م — مركز بنك الدم الجامعي</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-success btn-sm" onclick="exportSystemDataToExcel()"><i class="fas fa-file-excel"></i> تصدير كل البيانات (Excel)</button>
+          <button class="btn btn-primary btn-sm" onclick="showModal('add-donation-modal')"><i class="fas fa-plus"></i> تبرع جديد</button>
+        </div>
+      </div>
+
+      <div class="alert alert-danger mb-16">
+        <i class="fas fa-exclamation-circle"></i>
+        <div class="alert-content">
+          <h4>تحذير: مخزون منخفض جداً</h4>
+          <p>فصيلة AB- وصلت إلى مستوى حرج (3 وحدات فقط). يُرجى اتخاذ إجراء فوري.</p>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="navigate('inventory', document.querySelector('[data-nav=inventory]'))">عرض المخزون</button>
+      </div>
+
+      <div class="stats-grid mb-24">
+        <div class="stat-card red">
+          <div class="stat-label">إجمالي وحدات الدم</div>
+          <div class="stat-value" id="dash-total-units">—</div>
+          <div class="stat-sub"><i class="fas fa-arrow-up trend-up"></i> +12% هذا الشهر</div>
+          <div class="stat-icon"><i class="fas fa-tint"></i></div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">متبرعون نشطون</div>
+          <div class="stat-value" id="dash-active-donors">—</div>
+          <div class="stat-sub"><i class="fas fa-arrow-up trend-up"></i> +89 هذا الأسبوع</div>
+          <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-label">طلبات معلقة</div>
+          <div class="stat-value" id="dash-pending-reqs">—</div>
+          <div class="stat-sub"><i class="fas fa-arrow-down trend-down"></i> 3 طلبات طارئة</div>
+          <div class="stat-icon"><i class="fas fa-clock"></i></div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">توزيعات هذا الشهر</div>
+          <div class="stat-value" id="dash-distributions">—</div>
+          <div class="stat-sub"><i class="fas fa-arrow-up trend-up"></i> +18% عن الشهر الماضي</div>
+          <div class="stat-icon"><i class="fas fa-truck"></i></div>
+        </div>
+      </div>
+
+      <div class="card mb-24">
+        <div class="card-header">
+          <div class="card-title"><i class="fas fa-vials"></i> مخزون فصائل الدم الحالي</div>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('inventory', document.querySelector('[data-nav=inventory]'))">تفاصيل المخزون</button>
+        </div>
+        <div class="card-body">
+          <div class="blood-grid">
+            <div class="blood-type-card good"><div class="blood-type-label">A+</div><div class="blood-type-units">324 <span>وحدة</span></div><div class="blood-bar"><div class="blood-bar-fill fill-green" style="width:81%"></div></div><div class="blood-type-status status-good">جيد</div></div>
+            <div class="blood-type-card warning-state"><div class="blood-type-label">A-</div><div class="blood-type-units">47 <span>وحدة</span></div><div class="blood-bar"><div class="blood-bar-fill fill-orange" style="width:35%"></div></div><div class="blood-type-status status-warning">منخفض</div></div>
+            <div class="blood-type-card good"><div class="blood-type-label">B+</div><div class="blood-type-units">218 <span>وحدة</span></div><div class="blood-bar"><div class="blood-bar-fill fill-green" style="width:65%"></div></div><div class="blood-type-status status-good">جيد</div></div>
+            <div class="blood-type-card warning-state"><div class="blood-type-label">B-</div><div class="blood-type-units">29 <span>وحدة</span></div><div class="blood-bar"><div class="blood-bar-fill fill-orange" style="width:29%"></div></div><div class="blood-type-status status-warning">منخفض</div></div>
+            <div class="blood-type-card good"><div class="blood-type-label">O+</div><div class="blood-type-units">512 <span>وحدة</span></div><div class="blood-bar"><div class="blood-bar-fill fill-green" style="width:92%"></div></div><div class="blood-type-status status-good">ممتاز</div></div>
+            <div class="blood-type-card warning-state"><div class="blood-type-label">O-</div><div class="blood-type-units">63 <span>وحدة</span></div><div class="blood-bar"><div class="blood-bar-fill fill-orange" style="width:42%"></div></div><div class="blood-type-status status-warning">منخفض</div></div>
+            <div class="blood-type-card good"><div class="blood-type-label">AB+</div><div class="blood-type-units">651 <span>وحدة</span></div><div class="blood-bar"><div class="blood-bar-fill fill-green" style="width:88%"></div></div><div class="blood-type-status status-good">جيد</div></div>
+            <div class="blood-type-card critical"><div class="blood-type-label">AB-</div><div class="blood-type-units">3 <span>وحدة</span></div><div class="blood-bar"><div class="blood-bar-fill fill-red" style="width:8%"></div></div><div class="blood-type-status status-critical"><i class="fas fa-heartbeat"></i> ⚠ حرج</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-sidebar">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-history"></i> النشاط الأخير</div>
+            <span class="badge badge-blue">اليوم</span>
+          </div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="timeline-item"><div class="timeline-dot tl-green"><i class="fas fa-tint"></i></div><div class="timeline-content"><h4>تبرع جديد — أحمد محمود</h4><p>فصيلة O+ — وحدة كاملة — المركز الرئيسي</p><div class="timeline-time">منذ 12 دقيقة</div></div></div>
+              <div class="timeline-item"><div class="timeline-dot tl-blue"><i class="fas fa-hospital"></i></div><div class="timeline-content"><h4>تسليم للمستشفى التخصصي</h4><p>10 وحدات A+ — طلب #REQ-2847</p><div class="timeline-time">منذ 45 دقيقة</div></div></div>
+              <div class="timeline-item"><div class="timeline-dot tl-red"><i class="fas fa-exclamation"></i></div><div class="timeline-content"><h4>تحذير: انتهاء صلاحية وشيك</h4><p>14 وحدة B+ ستنتهي صلاحيتها خلال 3 أيام</p><div class="timeline-time">منذ 1 ساعة</div></div></div>
+              <div class="timeline-item"><div class="timeline-dot tl-orange"><i class="fas fa-flask"></i></div><div class="timeline-content"><h4>نتائج تحليل — 8 عينات</h4><p>7 صالحة، 1 مرفوضة</p><div class="timeline-time">منذ 2 ساعة</div></div></div>
+              <div class="timeline-item"><div class="timeline-dot tl-green"><i class="fas fa-check"></i></div><div class="timeline-content"><h4>طلب AB+ مكتمل</h4><p>مستشفى القاهرة الدولي — 5 وحدات</p><div class="timeline-time">منذ 3 ساعات</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction: column; gap: 18px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="fas fa-chart-pie"></i> إحصائيات سريعة</div></div>
+            <div class="card-body">
+              <div class="quick-stats">
+                <div class="quick-stat"><div class="qs-label">هذا الأسبوع</div><div class="qs-value">148</div><div class="qs-sub">تبرع جديد</div></div>
+                <div class="quick-stat"><div class="qs-label">تم رفضه</div><div class="qs-value" style="color:var(--danger)">12</div><div class="qs-sub">عينة مرفوضة</div></div>
+                <div class="quick-stat"><div class="qs-label">صلاحية منتهية</div><div class="qs-value" style="color:var(--warning)">7</div><div class="qs-sub">وحدة مهدرة</div></div>
+              </div>
+              <div class="divider"></div>
+              <div style="font-size:12px; font-weight:700; color:var(--text-secondary); margin-bottom:10px;">تبرعات آخر 7 أيام</div>
+              <div class="mini-chart">
+                <div class="bar-col"><div class="bar" style="height:35%"></div><div class="bar-label">س</div></div>
+                <div class="bar-col"><div class="bar" style="height:55%"></div><div class="bar-label">ح</div></div>
+                <div class="bar-col"><div class="bar" style="height:40%"></div><div class="bar-label">ن</div></div>
+                <div class="bar-col"><div class="bar alt" style="height:80%"></div><div class="bar-label">ث</div></div>
+                <div class="bar-col"><div class="bar" style="height:60%"></div><div class="bar-label">ر</div></div>
+                <div class="bar-col"><div class="bar" style="height:70%"></div><div class="bar-label">خ</div></div>
+                <div class="bar-col"><div class="bar alt" style="height:100%"></div><div class="bar-label">ج</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== NEW: AI INSIGHTS PAGE ===== -->
+    <div class="page" id="page-insights">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title"><i class="fas fa-brain" style="color:var(--primary)"></i> رؤى وتحليلات ذكية</h2>
+          <p class="section-sub">تحليل تلقائي لحالة المخزون والطلبات والمتبرعين</p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="loadInsights()"><i class="fas fa-sync-alt"></i> تحديث</button>
+      </div>
+
+      <div class="metric-grid mb-24" id="insights-metrics">
+        <div class="metric-card"><div class="metric-val">—</div><div class="metric-label">متبرعون مؤهلون</div></div>
+        <div class="metric-card"><div class="metric-val" style="color:var(--warning)">—</div><div class="metric-label">تنتهي خلال أسبوع</div></div>
+        <div class="metric-card"><div class="metric-val" style="color:var(--danger)">—</div><div class="metric-label">طلبات عاجلة معلقة</div></div>
+        <div class="metric-card"><div class="metric-val" style="color:var(--success)">—</div><div class="metric-label">فصائل في حالة حرجة</div></div>
+      </div>
+
+      <div class="grid-sidebar">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-lightbulb"></i> توصيات النظام</div>
+            <span class="badge badge-purple"><i class="fas fa-robot"></i> AI</span>
+          </div>
+          <div class="card-body">
+            <div class="insights-grid" id="insights-grid">
+              <div class="text-muted" style="grid-column:1/-1; text-align:center; padding:24px;">جارٍ تحميل التوصيات...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fas fa-stream"></i> سجل النشاط الأخير</div></div>
+          <div class="card-body">
+            <div class="timeline" id="activity-timeline">
+              <div class="text-muted" style="text-align:center; padding:24px;">جارٍ التحميل...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== INVENTORY ===== -->
+    <div class="page" id="page-inventory">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title">إدارة المخزون</h2>
+          <p class="section-sub">تتبع مخزون الدم وإدارة الوحدات المتاحة</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-ghost btn-sm"><i class="fas fa-filter"></i> تصفية</button>
+          <button class="btn btn-primary btn-sm" onclick="showModal('add-stock-modal')"><i class="fas fa-plus"></i> إضافة مخزون</button>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi-card"><div class="kpi-number">1,847</div><div class="kpi-label">إجمالي الوحدات</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--success)">1,790</div><div class="kpi-label">وحدات صالحة</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--warning)">57</div><div class="kpi-label">تنتهي خلال 7 أيام</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--danger)">4</div><div class="kpi-label">فصائل في مستوى حرج</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="fas fa-list"></i> سجل المخزون الكامل</div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>#</th><th>رقم الوحدة</th><th>الفصيلة</th><th>النوع</th><th>تاريخ التبرع</th><th>تاريخ الانتهاء</th><th>المتبرع</th><th>المخزن</th><th>الحالة</th><th>إجراء</th></tr></thead>
+            <tbody id="inventory-tbody">
+              <tr><td colspan="10" style="text-align:center; color:var(--text-muted); padding:24px;">جارٍ التحميل من قاعدة البيانات...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DONORS ===== -->
+    <div class="page" id="page-donors">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title">إدارة المتبرعين</h2>
+          <p class="section-sub">قاعدة بيانات المتبرعين وسجل التبرعات</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-ghost btn-sm" onclick="exportSystemDataToExcel()"><i class="fas fa-file-export"></i> تصدير</button>
+          <button class="btn btn-primary btn-sm" onclick="showModal('add-donor-modal')"><i class="fas fa-user-plus"></i> متبرع جديد</button>
+        </div>
+      </div>
+
+      <div class="kpi-row mb-20">
+        <div class="kpi-card"><div class="kpi-number">3,421</div><div class="kpi-label">إجمالي المتبرعين</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--success)">1,840</div><div class="kpi-label">مؤهلون للتبرع</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--warning)">423</div><div class="kpi-label">في انتظار الدور</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--danger)">158</div><div class="kpi-label">موقوفون مؤقتاً</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fas fa-users"></i> قائمة المتبرعين</div></div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>#</th><th>المتبرع</th><th>الفصيلة</th><th>العمر</th><th>الهاتف</th><th>آخر تبرع</th><th>عدد التبرعات</th><th>الحالة</th><th>إجراء</th></tr></thead>
+            <tbody id="donors-tbody">
+              <tr><td colspan="9" style="text-align:center; color:var(--text-muted); padding:24px;">جارٍ التحميل من قاعدة البيانات...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DONATION SESSIONS ===== -->
+    <div class="page" id="page-donation-sessions">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title">جلسات التبرع</h2>
+          <p class="section-sub">جدولة وإدارة حملات التبرع بالدم</p>
+        </div>
+        <button class="btn btn-primary" onclick="showModal('add-session-modal')"><i class="fas fa-plus"></i> جلسة جديدة</button>
+      </div>
+      <div class="grid-2 mb-20">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fas fa-calendar-alt"></i> الجلسات القادمة</div></div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="border:1px solid var(--border); border-radius:var(--radius-md); padding:14px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                <div>
+                  <div style="font-size:14px; font-weight:700; margin-bottom:3px;">حملة المركز الجامعي</div>
+                  <div style="font-size:12px; color:var(--text-muted)"><i class="fas fa-map-marker-alt"></i> جامعة القاهرة</div>
+                </div>
+                <span class="badge badge-green">غداً</span>
+              </div>
+              <div style="display:flex; gap:16px; font-size:12px; color:var(--text-secondary);">
+                <span><i class="fas fa-clock"></i> 9:00 ص – 3:00 م</span>
+                <span><i class="fas fa-user-check"></i> 45 مسجل</span>
+                <span><i class="fas fa-chair"></i> سعة 60</span>
+              </div>
+              <div style="margin-top:10px;">
+                <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-bottom:4px;"><span>معدل الحجز</span><span>75%</span></div>
+                <div class="level-bar"><div class="level-fill" style="width:75%; background:var(--success)"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fas fa-history"></i> الجلسات السابقة</div></div>
+          <div class="table-container">
+            <table>
+              <thead><tr><th>التاريخ</th><th>الموقع</th><th>المتبرعون</th><th>وحدات</th><th>الحالة</th></tr></thead>
+              <tbody>
+                <tr><td>20 مايو</td><td>مستشفى الشرق</td><td>38</td><td style="color:var(--success); font-weight:700">35</td><td><span class="badge badge-green">مكتملة</span></td></tr>
+                <tr><td>18 مايو</td><td>كلية الطب</td><td>65</td><td style="color:var(--success); font-weight:700">62</td><td><span class="badge badge-green">مكتملة</span></td></tr>
+                <tr><td>15 مايو</td><td>المركز الرئيسي</td><td>42</td><td style="color:var(--success); font-weight:700">40</td><td><span class="badge badge-green">مكتملة</span></td></tr>
+                <tr><td>12 مايو</td><td>نادي الأهلي</td><td>90</td><td style="color:var(--success); font-weight:700">88</td><td><span class="badge badge-green">مكتملة</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SCREENING ===== -->
+    <div class="page" id="page-screening">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title">الفحص والتحليل المخبري</h2>
+          <p class="section-sub">نتائج فحص عينات الدم والتصنيف</p>
+        </div>
+        <button class="btn btn-primary" onclick="showModal('add-test-modal')"><i class="fas fa-flask"></i> إضافة فحص</button>
+      </div>
+      <div class="kpi-row mb-20">
+        <div class="kpi-card"><div class="kpi-number">248</div><div class="kpi-label">عينات هذا الشهر</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--success)">231</div><div class="kpi-label">اجتازت الفحص</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--danger)">17</div><div class="kpi-label">مرفوضة</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--warning)">12</div><div class="kpi-label">قيد الفحص</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fas fa-microscope"></i> سجل فحوصات الدم</div></div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>رقم العينة</th><th>المتبرع</th><th>الفصيلة</th><th>HIV</th><th>HBV</th><th>HCV</th><th>الزهري</th><th>ملاريا</th><th>النتيجة</th><th>الموافقة</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:monospace">#S-4421</td><td>أحمد محمود</td><td><span class="blood-tag">O+</span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-green">مقبول</span></td><td><button class="btn btn-success btn-sm" onclick="showToast('تمت الموافقة', 'success')"><i class="fas fa-check"></i> قبول</button></td></tr>
+              <tr><td style="font-family:monospace">#S-4420</td><td>سارة فهمي</td><td><span class="blood-tag">A-</span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-red"><i class="fas fa-plus"></i></span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-red">مرفوض</span></td><td><button class="btn btn-ghost btn-sm"><i class="fas fa-times"></i> رفض</button></td></tr>
+              <tr><td style="font-family:monospace">#S-4419</td><td>محمد عبدالرحمن</td><td><span class="blood-tag">AB+</span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-green"><i class="fas fa-minus"></i></span></td><td><span class="badge badge-orange">قيد الفحص</span></td><td><span style="color:var(--text-muted); font-size:12px;">جارٍ...</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== REQUESTS ===== -->
+    <div class="page" id="page-requests">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title">طلبات الدم</h2>
+          <p class="section-sub">إدارة طلبات المستشفيات والمراكز الطبية</p>
+        </div>
+        <button class="btn btn-primary" onclick="showModal('add-request-modal')"><i class="fas fa-plus"></i> طلب جديد</button>
+      </div>
+      <div class="alert alert-danger mb-16">
+        <i class="fas fa-exclamation-circle"></i>
+        <div class="alert-content"><h4>3 طلبات عاجلة تنتظر الموافقة</h4><p>يُرجى مراجعة الطلبات العاجلة وإتمام التوريد في أسرع وقت ممكن.</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fas fa-clipboard-list"></i> قائمة الطلبات</div></div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>رقم الطلب</th><th>المستشفى</th><th>الفصيلة</th><th>الكمية</th><th>الأولوية</th><th>التاريخ</th><th>الحالة</th><th>إجراء</th></tr></thead>
+            <tbody id="requests-tbody">
+              <tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:24px;">جارٍ التحميل من قاعدة البيانات...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DISTRIBUTION ===== -->
+    <div class="page" id="page-distribution">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title">التوزيع والشحن</h2>
+          <p class="section-sub">تتبع عمليات توزيع الدم على المستشفيات</p>
+        </div>
+        <button class="btn btn-primary" onclick="showModal('add-shipment-modal')"><i class="fas fa-truck"></i> شحنة جديدة</button>
+      </div>
+      <div class="kpi-row mb-20">
+        <div class="kpi-card"><div class="kpi-number">642</div><div class="kpi-label">وحدة موزعة هذا الشهر</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--warning)">8</div><div class="kpi-label">شحنات في الطريق</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--success)">24</div><div class="kpi-label">مستشفى مخدومة</div></div>
+        <div class="kpi-card"><div class="kpi-number" style="color:var(--success)">98.5%</div><div class="kpi-label">نسبة التوصيل بوقت</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fas fa-shipping-fast"></i> الشحنات الأخيرة</div></div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>رقم الشحنة</th><th>الوجهة</th><th>الكمية</th><th>الفصيلة</th><th>المغادرة</th><th>الوصول المتوقع</th><th>الحالة</th><th>السائق</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:monospace">#SH-0921</td><td style="font-weight:600">مستشفى الشرق</td><td>6 وحدات</td><td><span class="blood-tag">O+</span></td><td>10:00 ص</td><td style="font-weight:700; color:var(--info)">11:30 ص</td><td><span class="badge badge-orange"><i class="fas fa-truck"></i> في الطريق</span></td><td>محمد فتحي</td></tr>
+              <tr><td style="font-family:monospace">#SH-0920</td><td style="font-weight:600">مركز القلب</td><td>4 وحدات</td><td><span class="blood-tag">AB+</span></td><td>9:00 ص</td><td style="font-weight:700; color:var(--success)">وصل</td><td><span class="badge badge-green"><i class="fas fa-check"></i> تم التسليم</span></td><td>خالد رشيد</td></tr>
+              <tr><td style="font-family:monospace">#SH-0919</td><td style="font-weight:600">مستشفى الأطفال</td><td>8 وحدات</td><td><span class="blood-tag">B+</span></td><td>أمس 3:00 م</td><td style="font-weight:700; color:var(--success)">وصل</td><td><span class="badge badge-green"><i class="fas fa-check"></i> تم التسليم</span></td><td>أحمد سليم</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== COMPATIBILITY ===== -->
+    <div class="page" id="page-compatibility">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title">توافق فصائل الدم</h2>
+          <p class="section-sub">جدول التوافق بين فصائل الدم المانحة والمتلقية</p>
+        </div>
+      </div>
+      <div class="grid-2 mb-20">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fas fa-table"></i> جدول توافق نقل الدم</div></div>
+          <div class="card-body">
+            <div style="font-size:12px; color:var(--text-secondary); margin-bottom:14px;">الصفوف = المانح / الأعمدة = المتلقي</div>
+            <div class="compat-grid">
+              <div class="compat-cell compat-header" style="text-align:right; padding-right:8px;">من\إلى</div>
+              <div class="compat-cell compat-header">A+</div><div class="compat-cell compat-header">A-</div><div class="compat-cell compat-header">B+</div><div class="compat-cell compat-header">B-</div><div class="compat-cell compat-header">O+</div><div class="compat-cell compat-header">O-</div><div class="compat-cell compat-header">AB+</div><div class="compat-cell compat-header">AB-</div>
+              <div class="compat-cell compat-blood-label">A+</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-no">✗</div>
+              <div class="compat-cell compat-blood-label">A-</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div>
+              <div class="compat-cell compat-blood-label">B+</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-no">✗</div>
+              <div class="compat-cell compat-blood-label">B-</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div>
+              <div class="compat-cell compat-blood-label">O+</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-no">✗</div>
+              <div class="compat-cell compat-blood-label">O-</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div>
+              <div class="compat-cell compat-blood-label">AB+</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-no">✗</div>
+              <div class="compat-cell compat-blood-label">AB-</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-no">✗</div><div class="compat-cell compat-yes">✓</div><div class="compat-cell compat-yes">✓</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="fas fa-search"></i> فحص التوافق السريع</div></div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group"><label>فصيلة المانح</label>
+                  <select class="form-control" id="donor-type" onchange="checkCompat()">
+                    <option value="">اختر...</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+                  </select>
+                </div>
+                <div class="form-group"><label>فصيلة المتلقي</label>
+                  <select class="form-control" id="recipient-type" onchange="checkCompat()">
+                    <option value="">اختر...</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+                  </select>
+                </div>
+              </div>
+              <div id="compat-result" style="margin-top:14px; display:none;"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="fas fa-info-circle"></i> معلومات مهمة</div></div>
+            <div class="card-body" style="display:flex; flex-direction:column; gap:10px;">
+              <div style="padding:12px; background:var(--primary-pale); border-radius:var(--radius-sm); border-right:3px solid var(--primary);"><div style="font-weight:700; font-size:13px; color:var(--primary); margin-bottom:4px;">O- المانح العالمي</div><div style="font-size:12px; color:var(--text-secondary);">يمكن التبرع لجميع فصائل الدم في حالات الطوارئ</div></div>
+              <div style="padding:12px; background:var(--info-light); border-radius:var(--radius-sm); border-right:3px solid var(--info);"><div style="font-weight:700; font-size:13px; color:var(--info); margin-bottom:4px;">AB+ المتلقي العالمي</div><div style="font-size:12px; color:var(--text-secondary);">يمكنه تلقي الدم من جميع الفصائل الأخرى</div></div>
+              <div style="padding:12px; background:var(--success-light); border-radius:var(--radius-sm); border-right:3px solid var(--success);"><div style="font-weight:700; font-size:13px; color:var(--success); margin-bottom:4px;">أهمية التطابق الدقيق</div><div style="font-size:12px; color:var(--text-secondary);">يُفضل دائماً استخدام الفصيلة المطابقة عند توفرها</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== REPORTS ===== -->
+    <div class="page" id="page-reports">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title">التقارير والإحصائيات</h2>
+          <p class="section-sub">تحليل أداء بنك الدم والاتجاهات</p>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('جارٍ تصدير التقرير الشامل...', 'success')"><i class="fas fa-file-pdf"></i> تصدير PDF</button>
+      </div>
+      <div class="stats-grid mb-24">
+        <div class="stat-card red"><div class="stat-label">إجمالي التبرعات هذا العام</div><div class="stat-value">4,821</div><div class="stat-sub"><i class="fas fa-arrow-up trend-up"></i> +23% عن العام الماضي</div><div class="stat-icon"><i class="fas fa-tint"></i></div></div>
+        <div class="stat-card green"><div class="stat-label">معدل القبول</div><div class="stat-value">93.2%</div><div class="stat-sub"><i class="fas fa-arrow-up trend-up"></i> +1.8% تحسن</div><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div>
+        <div class="stat-card orange"><div class="stat-label">متوسط وقت المعالجة</div><div class="stat-value">4.2h</div><div class="stat-sub"><i class="fas fa-arrow-down trend-up"></i> تحسن بـ 30 دقيقة</div><div class="stat-icon"><i class="fas fa-clock"></i></div></div>
+        <div class="stat-card blue"><div class="stat-label">رضا المستشفيات</div><div class="stat-value">97%</div><div class="stat-sub"><i class="fas fa-star" style="color:var(--warning)"></i> تقييم ممتاز</div><div class="stat-icon"><i class="fas fa-star"></i></div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fas fa-chart-line"></i> التبرعات الشهرية (2026)</div></div>
+          <div class="card-body">
+            <div style="display:flex; align-items:flex-end; gap:8px; height:120px; padding-bottom:8px;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;"><div style="width:100%; background:var(--primary-light); border-radius:4px 4px 0 0; height:60%;"></div><div style="font-size:10px; color:var(--text-muted)">يناير</div><div style="font-size:10px; font-weight:700">385</div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;"><div style="width:100%; background:var(--primary-light); border-radius:4px 4px 0 0; height:72%;"></div><div style="font-size:10px; color:var(--text-muted)">فبراير</div><div style="font-size:10px; font-weight:700">420</div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;"><div style="width:100%; background:linear-gradient(180deg,var(--primary),var(--accent)); border-radius:4px 4px 0 0; height:90%;"></div><div style="font-size:10px; color:var(--text-muted)">مارس</div><div style="font-size:10px; font-weight:800; color:var(--primary)">510</div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;"><div style="width:100%; background:var(--primary-light); border-radius:4px 4px 0 0; height:75%;"></div><div style="font-size:10px; color:var(--text-muted)">أبريل</div><div style="font-size:10px; font-weight:700">440</div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;"><div style="width:100%; background:linear-gradient(180deg,var(--primary),var(--accent)); border-radius:4px 4px 0 0; height:100%;"></div><div style="font-size:10px; color:var(--text-muted)">مايو</div><div style="font-size:10px; font-weight:800; color:var(--primary)">573</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fas fa-chart-pie"></i> توزيع التبرعات بالفصيلة</div></div>
+          <div class="card-body">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div class="inv-row"><div class="inv-type">O+</div><div class="inv-bar-wrap"><div class="inv-bar-fill" style="width:38%;background:var(--primary)"></div></div><div class="inv-count">38%</div></div>
+              <div class="inv-row"><div class="inv-type">A+</div><div class="inv-bar-wrap"><div class="inv-bar-fill" style="width:28%;background:var(--info)"></div></div><div class="inv-count">28%</div></div>
+              <div class="inv-row"><div class="inv-type">B+</div><div class="inv-bar-wrap"><div class="inv-bar-fill" style="width:18%;background:var(--warning)"></div></div><div class="inv-count">18%</div></div>
+              <div class="inv-row"><div class="inv-type">AB+</div><div class="inv-bar-wrap"><div class="inv-bar-fill" style="width:8%;background:var(--success)"></div></div><div class="inv-count">8%</div></div>
+              <div class="inv-row"><div class="inv-type">باقي</div><div class="inv-bar-wrap"><div class="inv-bar-fill" style="width:8%;background:var(--text-muted)"></div></div><div class="inv-count">8%</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div class="page" id="page-settings">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title">إعدادات النظام</h2>
+          <p class="section-sub">تكوين وإدارة إعدادات بنك الدم</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div class="card" id="super-admin-section" style="border: 1px solid var(--primary);">
+            <div class="card-header" style="background: var(--primary-pale);"><div class="card-title"><i class="fas fa-shield-alt"></i> إدارة النظام والمديرين (Super Admin)</div></div>
+            <div class="card-body">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div style="font-size:13px; font-weight:700; color:var(--text-secondary)">المديرون الحاليون</div>
+                <button class="btn btn-sm btn-primary" onclick="showModal('add-manager-modal')"><i class="fas fa-plus"></i> إضافة مشرف</button>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:10px;" id="managers-list">
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:var(--bg-elevated); border-radius:var(--radius-sm); border: 1px solid var(--border-strong);">
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <div class="avatar avatar-md" style="background:linear-gradient(135deg,var(--primary),var(--accent))">ع</div>
+                    <div>
+                      <div style="font-size:14px; font-weight:800; color:var(--text-primary);">د. عبدالرحمن عبدالله علي <span style="color:var(--text-muted); font-weight:600; font-size:12px;">(أنت)</span></div>
+                      <div style="font-size:11px; color:var(--text-muted); margin-top:2px;"><i class="fas fa-shield-alt" style="color:var(--primary-light); margin-left:4px;"></i> Super Admin · مدير بنك الدم</div>
+                    </div>
+                  </div>
+                  <span class="badge badge-purple"><i class="fas fa-crown"></i> لا يمكن الحذف</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="fas fa-bell"></i> إعدادات التنبيهات</div></div>
+            <div class="card-body" style="display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div><div style="font-size:13px; font-weight:600;">تنبيه المخزون المنخفض</div><div style="font-size:12px; color:var(--text-muted)">عند وصول أي فصيلة لمستوى حرج</div></div>
+                <label class="toggle-switch"><input type="checkbox" checked><div class="toggle-slider"></div></label>
+              </div>
+              <div class="divider" style="margin:0;"></div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div><div style="font-size:13px; font-weight:600;">تنبيه انتهاء الصلاحية</div><div style="font-size:12px; color:var(--text-muted)">قبل 7 أيام من الانتهاء</div></div>
+                <label class="toggle-switch"><input type="checkbox" checked><div class="toggle-slider"></div></label>
+              </div>
+              <div class="divider" style="margin:0;"></div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div><div style="font-size:13px; font-weight:600;">تنبيه الطلبات العاجلة</div><div style="font-size:12px; color:var(--text-muted)">إشعار فوري للطلبات الحرجة</div></div>
+                <label class="toggle-switch"><input type="checkbox" checked><div class="toggle-slider"></div></label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="fas fa-sliders-h"></i> حدود المخزون الدنيا</div></div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group"><label>A+ (حد أدنى)</label><input class="form-control" type="number" value="50"></div>
+                <div class="form-group"><label>A- (حد أدنى)</label><input class="form-control" type="number" value="20"></div>
+                <div class="form-group"><label>B+ (حد أدنى)</label><input class="form-control" type="number" value="40"></div>
+                <div class="form-group"><label>B- (حد أدنى)</label><input class="form-control" type="number" value="15"></div>
+                <div class="form-group"><label>O+ (حد أدنى)</label><input class="form-control" type="number" value="80"></div>
+                <div class="form-group"><label>O- (حد أدنى)</label><input class="form-control" type="number" value="30"></div>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" onclick="showToast('تم حفظ الحدود الدنيا', 'success')"><i class="fas fa-save"></i> حفظ</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="fas fa-hospital-alt"></i> بيانات المركز</div></div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group form-full"><label>اسم بنك الدم</label><input class="form-control" value="بنك الدم المركزي الجامعي"></div>
+                <div class="form-group form-full"><label>العنوان</label><input class="form-control" value="شارع التحرير، الدقي، الجيزة"></div>
+                <div class="form-group"><label>الترخيص</label><input class="form-control" value="BB-2024-00182" disabled></div>
+                <div class="form-group"><label>السعة التخزينية</label><input class="form-control" value="3,500 وحدة"></div>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" onclick="showToast('تم تحديث بيانات المركز', 'success')"><i class="fas fa-save"></i> حفظ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div><!-- END MAIN APP -->
+
+<!-- ============ MODALS ============ -->
+
+<!-- Emergency -->
+<div class="modal-overlay" id="emergency-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" style="color:var(--danger);"><i class="fas fa-exclamation-triangle"></i> طلب دم طارئ</div>
+      <button class="modal-close" onclick="closeModal('emergency-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-danger mb-16"><i class="fas fa-clock"></i><div class="alert-content"><h4>طلب طارئ — معالجة فورية</h4><p>سيتم إعطاء هذا الطلب أعلى أولوية في النظام</p></div></div>
+      <div class="form-grid">
+        <div class="form-group"><label>المستشفى الطالب</label><input class="form-control" placeholder="اسم المستشفى"></div>
+        <div class="form-group"><label>الطبيب المسؤول</label><input class="form-control" placeholder="د. ..."></div>
+        <div class="form-group"><label>الفصيلة المطلوبة</label><select class="form-control"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+        <div class="form-group"><label>الكمية (وحدات)</label><input class="form-control" type="number" placeholder="0" min="1"></div>
+        <div class="form-group form-full"><label>ملاحظات طبية</label><textarea class="form-control" rows="3" placeholder="السبب الطبي، الحالة، أي تفاصيل إضافية..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('emergency-modal')">إلغاء</button>
+      <button class="btn btn-danger" onclick="closeModal('emergency-modal'); showToast('تم إرسال الطلب الطارئ! جارٍ التجهيز...', 'warning')"><i class="fas fa-bolt"></i> إرسال طلب طارئ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Donation -->
+<div class="modal-overlay" id="add-donation-modal">
+  <div class="modal-box">
+    <div class="modal-header"><div class="modal-title"><i class="fas fa-tint"></i> تسجيل تبرع جديد</div><button class="modal-close" onclick="closeModal('add-donation-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>رقم هوية المتبرع</label><input class="form-control" placeholder="أو ابحث بالاسم"></div>
+        <div class="form-group"><label>فصيلة الدم</label><select class="form-control"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+        <div class="form-group"><label>نوع التبرع</label><select class="form-control"><option>دم كامل</option><option>بلازما</option><option>صفائح دموية</option><option>كريات حمراء</option></select></div>
+        <div class="form-group"><label>الكمية (مل)</label><input class="form-control" type="number" value="450"></div>
+        <div class="form-group form-full"><label>ملاحظات</label><textarea class="form-control" rows="2" placeholder="أي ملاحظات إضافية..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-donation-modal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="closeModal('add-donation-modal'); showToast('تم تسجيل التبرع بنجاح!', 'success')"><i class="fas fa-check"></i> تسجيل التبرع</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Donor -->
+<div class="modal-overlay" id="add-donor-modal">
+  <div class="modal-box">
+    <div class="modal-header"><div class="modal-title"><i class="fas fa-user-plus"></i> إضافة متبرع جديد</div><button class="modal-close" onclick="closeModal('add-donor-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>الاسم الأول</label><input class="form-control" id="new-donor-fname" placeholder="الاسم"></div>
+        <div class="form-group"><label>اسم العائلة</label><input class="form-control" id="new-donor-lname" placeholder="اسم العائلة"></div>
+        <div class="form-group"><label>فصيلة الدم</label><select class="form-control" id="new-donor-blood"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+        <div class="form-group"><label>تاريخ الميلاد</label><input class="form-control" type="date"></div>
+        <div class="form-group"><label>رقم الهاتف</label><input class="form-control" id="new-donor-phone" placeholder="05XXXXXXXX"></div>
+        <div class="form-group"><label>البريد الإلكتروني</label><input class="form-control" placeholder="email@example.com"></div>
+        <div class="form-group form-full"><label>العنوان</label><input class="form-control" placeholder="العنوان الكامل"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-donor-modal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitNewDonor()"><i class="fas fa-user-plus"></i> إضافة المتبرع</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Request -->
+<div class="modal-overlay" id="add-request-modal">
+  <div class="modal-box">
+    <div class="modal-header"><div class="modal-title"><i class="fas fa-hospital"></i> طلب دم جديد</div><button class="modal-close" onclick="closeModal('add-request-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>اسم المستشفى</label><input class="form-control" id="new-req-hospital" placeholder="اسم المستشفى أو المركز"></div>
+        <div class="form-group"><label>الطبيب المسؤول</label><input class="form-control" id="new-req-doctor" placeholder="د. ..."></div>
+        <div class="form-group"><label>الفصيلة</label><select class="form-control" id="new-req-blood"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+        <div class="form-group"><label>الكمية (وحدات)</label><input class="form-control" id="new-req-qty" type="number" min="1" value="1"></div>
+        <div class="form-group"><label>الأولوية</label><select class="form-control" id="new-req-priority"><option value="critical">عاجل جداً</option><option value="urgent">عاجل</option><option value="normal" selected>عادي</option></select></div>
+        <div class="form-group form-full"><label>الملاحظات الطبية</label><textarea class="form-control" id="new-req-notes" rows="3"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-request-modal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitNewRequest()"><i class="fas fa-paper-plane"></i> إرسال الطلب</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Stock -->
+<div class="modal-overlay" id="add-stock-modal">
+  <div class="modal-box">
+    <div class="modal-header"><div class="modal-title"><i class="fas fa-vials"></i> إضافة مخزون يدوي</div><button class="modal-close" onclick="closeModal('add-stock-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>الفصيلة</label><select class="form-control" id="new-stock-blood"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+        <div class="form-group"><label>النوع</label><select class="form-control" id="new-stock-type"><option value="whole">دم كامل</option><option value="plasma">بلازما</option><option value="platelets">صفائح</option><option value="red">كريات حمراء</option></select></div>
+        <div class="form-group"><label>تاريخ التبرع</label><input class="form-control" type="date" id="new-stock-date"></div>
+        <div class="form-group"><label>تاريخ الانتهاء</label><input class="form-control" type="date" id="new-stock-expiry"></div>
+        <div class="form-group"><label>المخزن</label><select class="form-control" id="new-stock-storage"><option>Fridge A1</option><option>Fridge A2</option><option>Fridge B1</option><option>Fridge B2</option></select></div>
+        <div class="form-group"><label>المصدر</label><input class="form-control" placeholder="مستشفى / حملة / ..."></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-stock-modal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitNewStock()"><i class="fas fa-plus"></i> إضافة للمخزون</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Session -->
+<div class="modal-overlay" id="add-session-modal">
+  <div class="modal-box">
+    <div class="modal-header"><div class="modal-title"><i class="fas fa-calendar-plus"></i> إضافة جلسة تبرع</div><button class="modal-close" onclick="closeModal('add-session-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full"><label>اسم الجلسة / الحملة</label><input class="form-control" placeholder="مثال: حملة جامعة القاهرة"></div>
+        <div class="form-group form-full"><label>الموقع</label><input class="form-control" placeholder="العنوان التفصيلي للموقع"></div>
+        <div class="form-group"><label>التاريخ</label><input class="form-control" type="date"></div>
+        <div class="form-group"><label>السعة (متبرع)</label><input class="form-control" type="number" placeholder="60"></div>
+        <div class="form-group"><label>وقت البدء</label><input class="form-control" type="time" value="09:00"></div>
+        <div class="form-group"><label>وقت الانتهاء</label><input class="form-control" type="time" value="16:00"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-session-modal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="closeModal('add-session-modal'); showToast('تمت إضافة الجلسة بنجاح!', 'success')"><i class="fas fa-check"></i> إضافة الجلسة</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Test -->
+<div class="modal-overlay" id="add-test-modal">
+  <div class="modal-box">
+    <div class="modal-header"><div class="modal-title"><i class="fas fa-microscope"></i> إدخال نتيجة فحص</div><button class="modal-close" onclick="closeModal('add-test-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>رقم العينة</label><input class="form-control" placeholder="#S-..."></div>
+        <div class="form-group"><label>اسم المتبرع</label><input class="form-control" placeholder="الاسم"></div>
+        <div class="form-group"><label>الفصيلة (تحديد معملي)</label><select class="form-control"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+        <div class="form-group"><label>الحالة الصحية</label><select class="form-control"><option>سليم ومؤهل</option><option>أمراض مزمنة / فيروسات</option></select></div>
+      </div>
+      <div class="divider"></div>
+      <div style="font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase;">نتائج الفحوصات</div>
+      <div class="form-grid form-grid-3">
+        <div class="form-group"><label>HIV</label><select class="form-control"><option>سالب (−)</option><option>موجب (+)</option></select></div>
+        <div class="form-group"><label>HBV (التهاب كبد B)</label><select class="form-control"><option>سالب (−)</option><option>موجب (+)</option></select></div>
+        <div class="form-group"><label>HCV (التهاب كبد C)</label><select class="form-control"><option>سالب (−)</option><option>موجب (+)</option></select></div>
+        <div class="form-group"><label>الزهري (VDRL)</label><select class="form-control"><option>سالب (−)</option><option>موجب (+)</option></select></div>
+        <div class="form-group"><label>الملاريا</label><select class="form-control"><option>سالب (−)</option><option>موجب (+)</option></select></div>
+        <div class="form-group"><label>HTLV</label><select class="form-control"><option>سالب (−)</option><option>موجب (+)</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-test-modal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="closeModal('add-test-modal'); showToast('تم حفظ النتائج وتحديث ملف المتبرع والمخزون بنجاح!', 'success')"><i class="fas fa-save"></i> حفظ النتائج</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Shipment -->
+<div class="modal-overlay" id="add-shipment-modal">
+  <div class="modal-box">
+    <div class="modal-header"><div class="modal-title"><i class="fas fa-truck"></i> شحنة جديدة</div><button class="modal-close" onclick="closeModal('add-shipment-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full"><label>المستشفى المستلم</label><select class="form-control"><option>مستشفى الشرق</option><option>مركز القلب</option><option>مستشفى الأطفال</option></select></div>
+        <div class="form-group"><label>وقت المغادرة</label><input class="form-control" type="time"></div>
+        <div class="form-group"><label>السائق</label><input class="form-control" placeholder="اسم السائق"></div>
+        <div class="form-group"><label>الفصيلة</label><select class="form-control"><option>A+</option><option>O+</option><option>AB+</option><option>B+</option><option>O-</option></select></div>
+        <div class="form-group"><label>عدد الوحدات</label><input class="form-control" type="number" min="1"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-shipment-modal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="closeModal('add-shipment-modal'); showToast('تم إطلاق الشحنة!', 'success')"><i class="fas fa-truck"></i> إطلاق الشحنة</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Manager -->
+<div class="modal-overlay" id="add-manager-modal">
+  <div class="modal-box">
+    <div class="modal-header"><div class="modal-title"><i class="fas fa-user-shield"></i> إضافة مشرف جديد</div><button class="modal-close" onclick="closeModal('add-manager-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full"><label>الاسم الكامل</label><input class="form-control" id="new-mgr-name" placeholder="مثال: د. أحمد، أ. محمود"></div>
+        <div class="form-group"><label>اسم المستخدم (Login)</label><input class="form-control" id="new-mgr-user" placeholder="username"></div>
+        <div class="form-group"><label>كلمة المرور</label><input type="password" class="form-control" id="new-mgr-pass" placeholder="******"></div>
+        <div class="form-group form-full"><label>الصلاحية</label><select class="form-control" id="new-mgr-role"><option value="deputy">نائب (Deputy)</option><option value="lab">أدمن تحاليل (Lab Admin)</option><option value="super_admin">مدير عام (Super Admin)</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-manager-modal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="addNewManager()"><i class="fas fa-user-plus"></i> إضافة المشرف</button>
+    </div>
+  </div>
+</div>
+
+<!-- Review Request -->
+<div class="modal-overlay" id="review-request-modal">
+  <div class="modal-box" style="max-width: 520px;">
+    <div class="modal-header"><div class="modal-title"><i class="fas fa-clipboard-check"></i> مراجعة طلب الإمداد والموافقة</div><button class="modal-close" onclick="closeModal('review-request-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div style="display:flex; justify-content:space-between; margin-bottom:20px; padding-bottom:16px; border-bottom:1px dashed var(--border);">
+        <div><div style="font-size:12px; color:var(--text-muted);">رقم الطلب</div><div style="font-size:16px; font-weight:800; font-family:monospace; color:var(--primary);" id="review-req-id">#REQ-0000</div></div>
+        <div style="text-align:left;"><div style="font-size:12px; color:var(--text-muted);">المستشفى الطالب</div><div style="font-size:14px; font-weight:700;" id="review-req-hospital">مستشفى</div></div>
+      </div>
+      <div class="grid-2 mb-20">
+        <div style="background:var(--primary-pale); padding:16px; border-radius:var(--radius-md); text-align:center;">
+          <div style="font-size:12px; font-weight:700; color:var(--primary); margin-bottom:8px;">الكمية المطلوبة</div>
+          <div style="font-size:28px; font-weight:900; line-height:1;" id="review-req-qty">0</div>
+          <div style="font-size:13px; color:var(--primary-dark); font-weight:800; margin-top:6px;"><i class="fas fa-tint"></i> فصيلة <span id="review-req-blood"></span></div>
+        </div>
+        <div style="background:var(--bg-main); border:1px solid var(--border); padding:16px; border-radius:var(--radius-md); text-align:center;">
+          <div style="font-size:12px; font-weight:700; color:var(--text-secondary); margin-bottom:8px;">المتاح في المخزون</div>
+          <div style="font-size:28px; font-weight:900; line-height:1;" id="review-inv-qty">0</div>
+          <div style="font-size:12px; color:var(--text-muted); font-weight:700; margin-top:6px;">وحدة جاهزة</div>
+        </div>
+      </div>
+      <div class="form-group form-full">
+        <label>ملاحظات وتوجيهات المدير</label>
+        <textarea class="form-control" id="review-req-notes" rows="3" placeholder="مثال: يرجى تجهيز الشحنة في مبردات خاصة..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('review-request-modal')">إلغاء</button>
+      <button class="btn btn-danger" onclick="rejectRequest()"><i class="fas fa-times-circle"></i> رفض الطلب</button>
+      <button class="btn btn-success" onclick="confirmRequestApproval()"><i class="fas fa-check-circle"></i> تأكيد وموافقة</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shipment Details -->
+<div class="modal-overlay" id="shipment-details-modal">
+  <div class="modal-box" style="max-width:560px;">
+    <div class="modal-header"><div class="modal-title"><i class="fas fa-shipping-fast"></i> تفاصيل الشحنة</div><button class="modal-close" onclick="closeModal('shipment-details-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div style="padding:16px; background:var(--bg-main); border-radius:var(--radius-md); margin-bottom: 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div><div style="font-size:12px; color:var(--text-muted)">رقم الطلب</div><div style="font-size:16px; font-weight:800;" id="shipment-detail-id">#REQ-0000</div></div>
+          <span class="badge badge-green"><i class="fas fa-check-circle"></i> مكتمل</span>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>المستشفى</label><div class="fs-13 fw-700" id="shipment-detail-hospital"></div></div>
+        <div class="form-group"><label>الفصيلة والكمية</label><div class="fs-13 fw-700" id="shipment-detail-blood"></div></div>
+        <div class="form-group"><label>السائق</label><div class="fs-13 fw-700" id="shipment-detail-driver"></div></div>
+        <div class="form-group"><label>رقم المركبة</label><div class="fs-13 fw-700" id="shipment-detail-vehicle"></div></div>
+        <div class="form-group"><label>وقت المغادرة</label><div class="fs-13 fw-700" id="shipment-detail-departure"></div></div>
+        <div class="form-group"><label>وقت الوصول</label><div class="fs-13 fw-700" id="shipment-detail-arrival"></div></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('shipment-details-modal')">إغلاق</button>
+      <button class="btn btn-primary" onclick="showToast('جارٍ طباعة الفاتورة...', 'success')"><i class="fas fa-print"></i> طباعة الفاتورة</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ============ SCRIPTS ============ -->
+<script src="js/translations.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
