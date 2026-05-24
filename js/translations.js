@@ -1,0 +1,587 @@
+// Drop4Life i18n — AR ↔ EN dictionary
+// Sorted longest-first to avoid partial substring collisions during DOM walk.
+const TRANSLATIONS = {
+  // Branding
+  "بنك الدم المركزي": "Central Blood Bank",
+  "نظام بنك الدم المركزي": "Central Blood Bank System",
+  "Drop4Life": "Drop4Life",
+
+  // Sidebar nav
+  "الرئيسية": "Main",
+  "إدارة التبرع": "Donation Management",
+  "المستشفيات": "Hospitals",
+  "الأدوات": "Tools",
+  "لوحة التحكم": "Dashboard",
+  "المخزون": "Inventory",
+  "المتبرعون": "Donors",
+  "جلسات التبرع": "Donation Sessions",
+  "الفحص والتحليل": "Screening",
+  "طلبات الدم": "Blood Requests",
+  "التوزيع والشحن": "Distribution",
+  "توافق فصائل الدم": "Blood Compatibility",
+  "التقارير": "Reports",
+  "الإعدادات": "Settings",
+  "تحليلات ذكية": "AI Insights",
+  "مدير بنك الدم": "Blood Bank Manager",
+  "د. عبدالرحمن عبدالله علي": "Dr. Abdulrahman Abdullah Ali",
+
+  // Topbar
+  "البحث في النظام...": "Search system...",
+  "طوارئ دم": "Blood Emergency",
+  "تغيير اللغة": "Change Language",
+  "الوضع الليلي": "Dark Mode",
+  "رسائل الطاقم": "Staff Messages",
+  "اكتب رسالة للجميع...": "Write a message to everyone...",
+  "الإشعارات": "Notifications",
+  "تحديد كمقروء": "Mark all as read",
+  "عرض كل الإشعارات": "View all notifications",
+  "الملف الشخصي": "Profile",
+  "تسجيل الخروج": "Logout",
+
+  // Notifications content
+  "طلب طارئ: مستشفى الشرق": "Emergency: El-Sharq Hospital",
+  "مطلوب 4 وحدات AB- بشكل فوري لحالة حرجة في العمليات.": "4 units of AB- urgently needed for critical surgery.",
+  "تحذير: نقص مخزون": "Low Stock Warning",
+  "رصيد فصيلة O- انخفض عن الحد الأدنى (المتبقي: 63 وحدة).": "O- stock dropped below threshold (Remaining: 63 units).",
+  "تم تسليم الشحنة": "Shipment Delivered",
+  "وصلت شحنة الدم #SH-0920 إلى مركز القلب الدولي بنجاح.": "Blood shipment #SH-0920 arrived at the Int. Heart Center.",
+  "منذ 5 دقائق": "5 mins ago",
+  "منذ 35 دقيقة": "35 mins ago",
+  "منذ ساعتين": "2 hours ago",
+
+  // Login
+  "تسجيل الدخول": "Login",
+  "مرحباً بك في نظام بنك الدم المركزي": "Welcome to the Central Blood Bank System",
+  "بيانات الدخول غير صحيحة": "Invalid credentials",
+  "دخول النظام": "Login",
+  "اسم المستخدم": "Username",
+  "كلمة المرور": "Password",
+
+  // Dashboard
+  "لوحة التحكم الرئيسية": "Main Dashboard",
+  "آخر تحديث: اليوم، ٢:٣٠ م — مركز بنك الدم الجامعي": "Last update: Today, 2:30 PM — University Blood Bank",
+  "تصدير كل البيانات (Excel)": "Export All Data (Excel)",
+  "تبرع جديد": "New Donation",
+  "تحذير: مخزون منخفض جداً": "Warning: Very Low Stock",
+  "فصيلة AB- وصلت إلى مستوى حرج (3 وحدات فقط). يُرجى اتخاذ إجراء فوري.": "AB- has reached critical level (3 units only). Immediate action required.",
+  "عرض المخزون": "View Inventory",
+  "إجمالي وحدات الدم": "Total Blood Units",
+  "متبرعون نشطون": "Active Donors",
+  "طلبات معلقة": "Pending Requests",
+  "توزيعات هذا الشهر": "Distributions This Month",
+  "هذا الشهر": "This Month",
+  "هذا الأسبوع": "This Week",
+  "طلبات طارئة": "Urgent Requests",
+  "عن الشهر الماضي": "vs Last Month",
+  "مخزون فصائل الدم الحالي": "Current Blood Type Stock",
+  "تفاصيل المخزون": "Stock Details",
+  "وحدة": "Unit",
+  "وحدات": "Units",
+  "جيد": "Good",
+  "منخفض": "Low",
+  "ممتاز": "Excellent",
+  "⚠ حرج": "⚠ Critical",
+  "حرج": "Critical",
+  "النشاط الأخير": "Recent Activity",
+  "اليوم": "Today",
+  "أمس": "Yesterday",
+  "إحصائيات سريعة": "Quick Stats",
+  "تم رفضه": "Rejected",
+  "عينة مرفوضة": "Rejected Sample",
+  "صلاحية منتهية": "Expired",
+  "وحدة مهدرة": "Wasted Unit",
+  "تبرعات آخر 7 أيام": "Donations Last 7 Days",
+  "معالجة": "Process",
+  "تفاصيل": "Details",
+
+  // Inventory
+  "إدارة المخزون": "Inventory Management",
+  "تتبع مخزون الدم وإدارة الوحدات المتاحة": "Track blood stock and manage available units",
+  "تصفية": "Filter",
+  "إضافة مخزون": "Add Stock",
+  "إجمالي الوحدات": "Total Units",
+  "وحدات صالحة": "Valid Units",
+  "تنتهي خلال 7 أيام": "Expiring in 7 Days",
+  "فصائل في مستوى حرج": "Critical Types",
+  "مستوى المخزون بالفصائل": "Stock Levels by Type",
+  "وحدات تنتهي قريباً": "Expiring Soon Units",
+  "الرقم": "ID",
+  "الفصيلة": "Type",
+  "النوع": "Kind",
+  "تاريخ الانتهاء": "Expiry Date",
+  "الحالة": "Status",
+  "كاملة": "Whole",
+  "بلازما": "Plasma",
+  "صفائح": "Platelets",
+  "كريات حمراء": "Red Cells",
+  "غداً": "Tomorrow",
+  "تحذير": "Warning",
+  "مراقبة": "Monitor",
+  "سجل المخزون الكامل": "Full Inventory Log",
+  "بحث...": "Search...",
+  "كل الفصائل": "All Types",
+  "رقم الوحدة": "Unit ID",
+  "تاريخ التبرع": "Donation Date",
+  "المتبرع": "Donor",
+  "المخزن": "Storage",
+  "إجراء": "Action",
+  "استخدام": "Use",
+
+  // Donors
+  "إدارة المتبرعين": "Donor Management",
+  "قاعدة بيانات المتبرعين وسجل التبرعات": "Donor database and donation records",
+  "تصدير": "Export",
+  "متبرع جديد": "New Donor",
+  "إجمالي المتبرعين": "Total Donors",
+  "مؤهلون للتبرع": "Eligible Donors",
+  "في انتظار الدور": "Waiting List",
+  "موقوفون مؤقتاً": "Temporarily Suspended",
+  "قائمة المتبرعين": "Donors List",
+  "بحث بالاسم أو الرقم...": "Search by name or ID...",
+  "العمر": "Age",
+  "الهاتف": "Phone",
+  "آخر تبرع": "Last Donation",
+  "عدد التبرعات": "Donations Count",
+  "مؤهل": "Eligible",
+  "عرض": "View",
+  "موقوف": "Suspended",
+
+  // Donation sessions
+  "جدولة وإدارة حملات التبرع بالدم": "Schedule and manage blood donation drives",
+  "جلسة جديدة": "New Session",
+  "الجلسات القادمة": "Upcoming Sessions",
+  "حملة المركز الجامعي": "University Center Drive",
+  "جامعة القاهرة": "Cairo University",
+  "مسجل": "Registered",
+  "سعة": "Capacity",
+  "معدل الحجز": "Booking Rate",
+  "حملة حي الزمالك": "Zamalek District Drive",
+  "نادي الجزيرة الرياضي": "Gezira Sports Club",
+  "الجلسات السابقة": "Past Sessions",
+  "التاريخ": "Date",
+  "الموقع": "Location",
+  "مكتملة": "Completed",
+
+  // Screening
+  "الفحص والتحليل المخبري": "Lab Screening & Analysis",
+  "نتائج فحص عينات الدم والتصنيف": "Blood sample screening results",
+  "إضافة فحص": "Add Test",
+  "عينات هذا الشهر": "Samples This Month",
+  "اجتازت الفحص": "Passed Screening",
+  "مرفوضة": "Rejected",
+  "قيد الفحص": "Under Screening",
+  "سجل فحوصات الدم": "Blood Screening Log",
+  "رقم العينة": "Sample ID",
+  "النتيجة": "Result",
+  "الموافقة": "Approval",
+  "الزهري": "Syphilis",
+  "ملاريا": "Malaria",
+  "مقبول": "Accepted",
+  "قبول": "Accept",
+  "رفض": "Reject",
+  "جارٍ...": "Pending...",
+
+  // Requests
+  "إدارة طلبات المستشفيات والمراكز الطبية": "Manage hospital and medical center requests",
+  "طلب جديد": "New Request",
+  "3 طلبات عاجلة تنتظر الموافقة": "3 urgent requests awaiting approval",
+  "يُرجى مراجعة الطلبات العاجلة وإتمام التوريد في أسرع وقت ممكن.": "Please review urgent requests and complete the supply ASAP.",
+  "قائمة الطلبات": "Requests List",
+  "عاجل جداً": "Very Urgent",
+  "عاجل": "Urgent",
+  "عادي": "Normal",
+  "مكتمل": "Completed",
+  "رقم الطلب": "Request ID",
+  "المستشفى": "Hospital",
+  "الكمية": "Quantity",
+  "الأولوية": "Priority",
+  "جديد": "New",
+  "قيد المعالجة": "Processing",
+  "مراجعة وموافقة": "Review & Approve",
+  "بانتظار المدير": "Awaiting Manager",
+  "تجهيز الشحنة": "Prepare Shipment",
+
+  // Distribution
+  "تتبع عمليات توزيع الدم على المستشفيات": "Track blood distribution to hospitals",
+  "شحنة جديدة": "New Shipment",
+  "وحدة موزعة هذا الشهر": "Units Distributed This Month",
+  "شحنات في الطريق": "Shipments In Transit",
+  "مستشفى مخدومة": "Hospitals Served",
+  "نسبة التوصيل بوقت": "On-Time Delivery Rate",
+  "الشحنات الأخيرة": "Recent Shipments",
+  "رقم الشحنة": "Shipment ID",
+  "الوجهة": "Destination",
+  "المغادرة": "Departure",
+  "الوصول المتوقع": "Expected Arrival",
+  "السائق": "Driver",
+  "في الطريق": "In Transit",
+  "وصل": "Arrived",
+  "تم التسليم": "Delivered",
+
+  // Compatibility
+  "جدول التوافق بين فصائل الدم المانحة والمتلقية": "Compatibility table between donor and recipient types",
+  "جدول توافق نقل الدم": "Blood Transfusion Compatibility",
+  "الصفوف = المانح / الأعمدة = المتلقي": "Rows = Donor / Columns = Recipient",
+  "متوافق": "Compatible",
+  "غير متوافق": "Incompatible",
+  "فحص التوافق السريع": "Quick Compatibility Check",
+  "فصيلة المانح": "Donor Type",
+  "فصيلة المتلقي": "Recipient Type",
+  "اختر...": "Select...",
+  "معلومات مهمة": "Important Information",
+  "O- المانح العالمي": "O- Universal Donor",
+  "يمكن التبرع لجميع فصائل الدم في حالات الطوارئ": "Can donate to all types in emergencies",
+  "AB+ المتلقي العالمي": "AB+ Universal Recipient",
+  "يمكنه تلقي الدم من جميع الفصائل الأخرى": "Can receive blood from all other types",
+  "أهمية التطابق الدقيق": "Importance of Exact Match",
+  "يُفضل دائماً استخدام الفصيلة المطابقة عند توفرها": "Prefer exact-matched types when available",
+
+  // Reports
+  "التقارير والإحصائيات": "Reports & Statistics",
+  "تحليل أداء بنك الدم والاتجاهات": "Analyze blood bank performance and trends",
+  "تصدير PDF": "Export PDF",
+  "إجمالي التبرعات هذا العام": "Total Donations This Year",
+  "معدل القبول": "Acceptance Rate",
+  "متوسط وقت المعالجة": "Avg Processing Time",
+  "رضا المستشفيات": "Hospital Satisfaction",
+  "التبرعات الشهرية (2026)": "Monthly Donations (2026)",
+  "توزيع التبرعات بالفصيلة": "Donation Distribution by Type",
+  "يناير": "Jan", "فبراير": "Feb", "مارس": "Mar", "أبريل": "Apr", "مايو": "May",
+  "باقي": "Others",
+
+  // Profile
+  "إدارة بيانات حسابك الشخصي والأمان": "Manage your personal account and security",
+  "بيانات الحساب": "Account Information",
+  "الاسم الكامل": "Full Name",
+  "البريد الإلكتروني": "Email",
+  "اسم المستخدم (Login)": "Username (Login)",
+  "كلمة المرور (تغيير)": "Password (Change)",
+  "رقم الهاتف": "Phone Number",
+  "إلغاء": "Cancel",
+  "حفظ التغييرات": "Save Changes",
+
+  // Settings
+  "إعدادات النظام": "System Settings",
+  "تكوين وإدارة إعدادات بنك الدم": "Configure and manage blood bank settings",
+  "إدارة النظام والمديرين (Super Admin)": "System & Managers Admin (Super Admin)",
+  "المديرون الحاليون": "Current Managers",
+  "إضافة مشرف": "Add Manager",
+  "لا يمكن الحذف": "Cannot Delete",
+  "إعدادات التنبيهات": "Notification Settings",
+  "تنبيه المخزون المنخفض": "Low Stock Alert",
+  "عند وصول أي فصيلة لمستوى حرج": "When any type reaches critical level",
+  "تنبيه انتهاء الصلاحية": "Expiry Alert",
+  "قبل 7 أيام من الانتهاء": "7 days before expiry",
+  "تنبيه الطلبات العاجلة": "Urgent Requests Alert",
+  "إشعار فوري للطلبات الحرجة": "Instant notification for critical requests",
+  "تقرير يومي تلقائي": "Auto Daily Report",
+  "إرسال ملخص يومي بالبريد": "Send daily summary via email",
+  "حدود المخزون الدنيا": "Minimum Stock Limits",
+  "حفظ": "Save",
+  "بيانات المركز": "Center Information",
+  "اسم بنك الدم": "Blood Bank Name",
+  "العنوان": "Address",
+  "الترخيص": "License",
+  "السعة التخزينية": "Storage Capacity",
+
+  // Insights page (NEW)
+  "رؤى وتحليلات ذكية": "Smart Insights & Analytics",
+  "تحليل تلقائي لحالة المخزون والطلبات والمتبرعين": "Automated analysis of stock, requests and donors",
+  "تحديث": "Refresh",
+  "متوفر للنقل الآن": "Available for transfusion",
+  "متبرعون مؤهلون": "Eligible donors",
+  "طلبات عاجلة معلقة": "Pending urgent requests",
+  "تنتهي خلال أسبوع": "Expiring within a week",
+  "توصيات النظام": "System Recommendations",
+  "سجل النشاط الأخير": "Recent Activity Log",
+  "لا توجد توصيات حالياً": "No recommendations right now",
+  "النظام يعمل بكفاءة عالية": "System running smoothly",
+
+  // Modals
+  "طلب دم طارئ": "Urgent Blood Request",
+  "طلب طارئ — معالجة فورية": "Urgent Request — Immediate Processing",
+  "سيتم إعطاء هذا الطلب أعلى أولوية في النظام": "This request will get highest priority",
+  "المستشفى الطالب": "Requesting Hospital",
+  "اسم المستشفى": "Hospital Name",
+  "الطبيب المسؤول": "Doctor in Charge",
+  "الفصيلة المطلوبة": "Requested Type",
+  "الكمية (وحدات)": "Quantity (Units)",
+  "ملاحظات طبية": "Medical Notes",
+  "السبب الطبي، الحالة، أي تفاصيل إضافية...": "Medical reason, condition, any extra details...",
+  "إرسال طلب طارئ": "Send Urgent Request",
+  "تسجيل تبرع جديد": "Register New Donation",
+  "رقم هوية المتبرع": "Donor ID",
+  "أو ابحث بالاسم": "Or search by name",
+  "فصيلة الدم": "Blood Type",
+  "نوع التبرع": "Donation Type",
+  "دم كامل": "Whole Blood",
+  "صفائح دموية": "Platelets",
+  "الكمية (مل)": "Quantity (mL)",
+  "الضغط (مم/زئبق)": "Blood Pressure (mmHg)",
+  "الهيموجلوبين": "Hemoglobin",
+  "الطبيب المشرف": "Supervising Doctor",
+  "المخزن المستهدف": "Target Storage",
+  "ملاحظات": "Notes",
+  "أي ملاحظات إضافية...": "Any additional notes...",
+  "تسجيل التبرع": "Register Donation",
+  "إضافة متبرع جديد": "Add New Donor",
+  "الاسم الأول": "First Name",
+  "الاسم": "Name",
+  "اسم العائلة": "Last Name",
+  "رقم الهوية": "ID Number",
+  "رقم الهوية الوطنية": "National ID Number",
+  "تاريخ الميلاد": "Birth Date",
+  "الجنس": "Gender",
+  "ذكر": "Male",
+  "أنثى": "Female",
+  "email@example.com": "email@example.com",
+  "العنوان الكامل": "Full Address",
+  "إضافة المتبرع": "Add Donor",
+  "إضافة مخزون يدوي": "Add Manual Stock",
+  "عدد الوحدات": "Number of Units",
+  "المصدر": "Source",
+  "مستشفى / حملة / ...": "Hospital / Drive / ...",
+  "رقم الدفعة": "Batch Number",
+  "إضافة للمخزون": "Add to Stock",
+  "إضافة جلسة تبرع": "Add Donation Session",
+  "اسم الجلسة / الحملة": "Session / Drive Name",
+  "مثال: حملة جامعة القاهرة": "e.g. Cairo University Drive",
+  "العنوان التفصيلي للموقع": "Detailed location address",
+  "السعة (متبرع)": "Capacity (Donors)",
+  "وقت البدء": "Start Time",
+  "وقت الانتهاء": "End Time",
+  "المنسق المسؤول": "Coordinator",
+  "رقم التواصل": "Contact Number",
+  "إضافة الجلسة": "Add Session",
+  "إدخال نتيجة فحص": "Enter Screening Result",
+  "اسم المتبرع": "Donor Name",
+  "الفصيلة (تحديد معملي)": "Type (Lab Determined)",
+  "الحالة الصحية": "Health Status",
+  "سليم ومؤهل": "Healthy and Eligible",
+  "أمراض مزمنة / فيروسات": "Chronic Diseases / Viruses",
+  "نتائج الفحوصات": "Test Results",
+  "HBV (التهاب كبد B)": "HBV (Hepatitis B)",
+  "HCV (التهاب كبد C)": "HCV (Hepatitis C)",
+  "الزهري (VDRL)": "Syphilis (VDRL)",
+  "سالب (−)": "Negative (−)",
+  "موجب (+)": "Positive (+)",
+  "حفظ النتائج": "Save Results",
+  "المستشفى المستلم": "Receiving Hospital",
+  "وقت المغادرة": "Departure Time",
+  "اسم السائق": "Driver Name",
+  "رقم المركبة": "Vehicle Number",
+  "لوحة المركبة": "License Plate",
+  "درجة حرارة الشحن": "Shipping Temperature",
+  "رقم طلب الاستلام": "Receiving Request ID",
+  "إطلاق الشحنة": "Dispatch Shipment",
+  "إضافة مشرف جديد": "Add New Manager",
+  "مثال: د. أحمد، أ. محمود": "e.g. Dr. Ahmed, Mr. Mahmoud",
+  "اسم المستخدم (Login)": "Username (Login)",
+  "username": "username",
+  "الصلاحية": "Role",
+  "نائب (Deputy)": "Deputy",
+  "أدمن تحاليل (Lab Admin)": "Lab Admin",
+  "مدير عام (Super Admin)": "Super Admin (General Manager)",
+  "إضافة المشرف": "Add Manager",
+  "مراجعة طلب الإمداد والموافقة": "Review Supply Request",
+  "المستشفى الطالب": "Requesting Hospital",
+  "الكمية المطلوبة": "Requested Quantity",
+  "المتاح في المخزون": "Available in Stock",
+  "وحدة مفحوصة وجاهزة": "Tested and ready units",
+  "ملاحظات وتوجيهات المدير (تُرفق مع الموافقة)": "Manager notes (attached to approval)",
+  "مثال: يرجى تجهيز الشحنة في مبردات خاصة وتسليمها للسائق فوراً...": "e.g. Please prepare in special coolers and hand to driver immediately...",
+  "رفض الطلب": "Reject Request",
+  "تأكيد وموافقة": "Confirm & Approve",
+  "تفاصيل الشحنة": "Shipment Details",
+  "الفصيلة والكمية": "Type & Quantity",
+  "وقت الوصول": "Arrival Time",
+  "إغلاق": "Close",
+  "طباعة الفاتورة": "Print Invoice",
+  "بطاقة المتبرع": "Donor Card",
+  "إجمالي التبرعات": "Total Donations",
+  "التبرع القادم": "Next Donation",
+  "سجل التبرعات الأخيرة": "Recent Donations Log",
+
+  // Toast messages
+  "تم تسجيل الدخول بنجاح كمدير عام": "Logged in successfully as General Manager",
+  "تم تسجيل الدخول كـ نائب": "Logged in as Deputy",
+  "تم تسجيل الدخول كـ أدمن تحاليل": "Logged in as Lab Admin",
+  "تم تسجيل الخروج بنجاح": "Logged out successfully",
+  "تم تفعيل الوضع الليلي": "Dark mode enabled",
+  "تم تفعيل الوضع الفاتح": "Light mode enabled",
+  "تم تبديل اللغة إلى العربية": "Switched to Arabic",
+  "Switched to English": "Switched to English",
+  "خطأ في الاتصال بقاعدة البيانات": "Database connection error",
+  "خطأ في الاتصال بالخادم": "Server connection error",
+  "تم حفظ المتبرع في قاعدة البيانات": "Donor saved to database",
+  "تم تسجيل الطلب في قاعدة البيانات بنجاح": "Request saved successfully",
+  "تمت الموافقة وحفظ الحالة في قاعدة البيانات": "Approved and saved to database",
+  "تم رفض الطلب": "Request rejected",
+  "تم تجهيز الشحنة للطلب": "Shipment prepared for request",
+  "تم إرسال الطلب الطارئ! جارٍ التجهيز...": "Urgent request sent! Preparing...",
+  "تم تسجيل التبرع بنجاح!": "Donation registered successfully!",
+  "تمت إضافة المخزون بنجاح!": "Stock added successfully!",
+  "تمت إضافة الجلسة بنجاح!": "Session added successfully!",
+  "تم حفظ النتائج وتحديث ملف المتبرع والمخزون بنجاح!": "Results saved, donor & stock updated!",
+  "تم إطلاق الشحنة!": "Shipment dispatched!",
+  "تم حفظ البيانات بنجاح": "Data saved successfully",
+  "تم تحديث الإعداد": "Setting updated",
+  "تم حفظ الحدود الدنيا": "Minimum limits saved",
+  "تم تحديث بيانات المركز": "Center info updated",
+  "تمت إضافة المشرف بنجاح": "Manager added successfully",
+  "تم حذف المشرف بنجاح": "Manager deleted successfully",
+  "جاري تجميع البيانات وتحويلها لملف Excel...": "Compiling data for Excel...",
+  "تم تصدير ملف Excel بنجاح!": "Excel exported successfully!",
+  "جارٍ طباعة الفاتورة...": "Printing invoice...",
+
+  // User names + roles
+  "د. ليلى سعد": "Dr. Layla Saad",
+  "م. سامي حسن": "Eng. Sami Hassan",
+  "(أنت)": "(you)",
+
+  // Common dynamic strings
+  "وحدة كاملة": "Whole unit",
+  "المركز الرئيسي": "Main Center",
+  "مستشفى الشرق": "El-Sharq Hospital",
+  "مركز القلب": "Heart Center",
+  "مستشفى الأطفال": "Children Hospital",
+  "المستشفى التخصصي": "Specialty Hospital",
+  "مستشفى القاهرة الدولي": "Cairo International Hospital",
+  "كلية الطب": "Faculty of Medicine",
+  "نادي الأهلي": "Al-Ahly Club",
+  "محمد فتحي": "Mohamed Fathy",
+  "خالد رشيد": "Khaled Rashid",
+  "أحمد سليم": "Ahmed Selim",
+  "أحمد محمود": "Ahmed Mahmoud",
+  "سارة فهمي": "Sara Fahmy",
+  "محمد عبدالرحمن": "Mohamed Abdelrahman",
+  "ريم طارق": "Reem Tarek",
+  "د. محمد فاروق": "Dr. Mohamed Farouk",
+  "د. أسامة حسن": "Dr. Osama Hassan",
+  "د. نجوى علي": "Dr. Nagwa Ali",
+  "د. رامي خالد": "Dr. Rami Khaled",
+  "نائب المدير": "Deputy Manager",
+  "أدمن تحاليل": "Lab Admin",
+
+  // Time / quantity short forms
+  "منذ 12 دقيقة": "12 mins ago",
+  "منذ 45 دقيقة": "45 mins ago",
+  "منذ 1 ساعة": "1 hour ago",
+  "منذ 2 ساعة": "2 hours ago",
+  "منذ 3 ساعات": "3 hours ago",
+  "10:30 ص": "10:30 AM",
+  "9:00 ص": "9:00 AM",
+  "10:00 ص": "10:00 AM",
+  "11:30 ص": "11:30 AM",
+  "9:00 ص – 3:00 م": "9:00 AM – 3:00 PM",
+  "أمس 3:00 م": "Yesterday 3:00 PM",
+  "ص": "AM",
+  "م": "PM",
+
+  // Activity texts
+  "تبرع جديد — أحمد محمود": "New donation — Ahmed Mahmoud",
+  "فصيلة O+ — وحدة كاملة — المركز الرئيسي": "Type O+ — Whole unit — Main Center",
+  "تسليم للمستشفى التخصصي": "Delivery to Specialty Hospital",
+  "10 وحدات A+ — طلب #REQ-2847": "10 units A+ — Request #REQ-2847",
+  "تحذير: انتهاء صلاحية وشيك": "Warning: imminent expiry",
+  "14 وحدة B+ ستنتهي صلاحيتها خلال 3 أيام": "14 units of B+ will expire within 3 days",
+  "نتائج تحليل — 8 عينات": "Test results — 8 samples",
+  "7 صالحة، 1 مرفوضة": "7 valid, 1 rejected",
+  "طلب AB+ مكتمل": "Request AB+ completed",
+  "مستشفى القاهرة الدولي — 5 وحدات": "Cairo International — 5 units",
+
+  // Dashboard short
+  "+12% هذا الشهر": "+12% this month",
+  "+89 هذا الأسبوع": "+89 this week",
+  "3 طلبات طارئة": "3 urgent requests",
+  "+18% عن الشهر الماضي": "+18% vs last month",
+  "+23% عن العام الماضي": "+23% vs last year",
+  "+1.8% تحسن": "+1.8% improvement",
+  "تحسن بـ 30 دقيقة": "30 mins faster",
+  "تقييم ممتاز": "Excellent rating",
+
+  // Quantities
+  "324 وحدة": "324 units",
+  "47 وحدة": "47 units",
+  "218 وحدة": "218 units",
+  "29 وحدة": "29 units",
+  "512 وحدة": "512 units",
+  "63 وحدة": "63 units",
+  "651 وحدة": "651 units",
+  "3 وحدة": "3 units",
+  "تبرع جديد": "New donation",
+  "3 طلبات": "3 requests",
+  "نقص الدم بحالة AB-": "Low AB- stock",
+  "بصفتك المدير العام للمستشفى، لك الصلاحية الكاملة لإضافة أو إزالة صلاحيات المديرين الآخرين.": "As General Manager, you have full authority to add or remove other managers' permissions.",
+  "بنك الدم المركزي الجامعي": "University Central Blood Bank",
+  "شارع التحرير، الدقي، الجيزة": "Tahrir Street, Dokki, Giza",
+  "3,500 وحدة": "3,500 units",
+  "إضافة مشرف جديد": "Add new manager",
+
+  // Sidebar nav
+  "تحليلات ذكية": "AI Insights",
+  "جديد": "New",
+  "8": "8",
+  "3": "3",
+};
+
+// Build reverse dictionary
+const TRANSLATIONS_AR_TO_EN = TRANSLATIONS;
+const TRANSLATIONS_EN_TO_AR = {};
+for (const ar in TRANSLATIONS_AR_TO_EN) {
+  TRANSLATIONS_EN_TO_AR[TRANSLATIONS_AR_TO_EN[ar]] = ar;
+}
+
+// Sort keys longest-first to prevent partial-match collisions
+const SORTED_AR_KEYS = Object.keys(TRANSLATIONS_AR_TO_EN).sort((a, b) => b.length - a.length);
+const SORTED_EN_KEYS = Object.keys(TRANSLATIONS_EN_TO_AR).sort((a, b) => b.length - a.length);
+
+// English is the default language. Toggle via the topbar language button.
+let isRTL = false;
+
+function translateText(text, toEnglish) {
+  if (!text || !text.trim()) return text;
+  const keys = toEnglish ? SORTED_AR_KEYS : SORTED_EN_KEYS;
+  const dict = toEnglish ? TRANSLATIONS_AR_TO_EN : TRANSLATIONS_EN_TO_AR;
+  let replaced = text;
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    if (replaced.includes(key)) {
+      replaced = replaced.split(key).join(dict[key]);
+    }
+  }
+  return replaced;
+}
+
+function translateDOM(node, toEnglish) {
+  if (!node) return;
+  if (node.nodeType === 1) {
+    if (node.nodeName === 'SCRIPT' || node.nodeName === 'STYLE') return;
+    if (node.placeholder) node.placeholder = translateText(node.placeholder, toEnglish);
+    if (node.tagName === 'INPUT' && ['text', 'button', 'submit'].includes(node.type)) {
+      node.value = translateText(node.value, toEnglish);
+    }
+    for (const child of node.childNodes) translateDOM(child, toEnglish);
+  } else if (node.nodeType === 3) {
+    node.nodeValue = translateText(node.nodeValue, toEnglish);
+  }
+}
+
+function toggleLanguage() {
+  isRTL = !isRTL;
+  document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+  document.documentElement.lang = isRTL ? 'ar' : 'en';
+  translateDOM(document.body, !isRTL);
+  if (typeof showToast === 'function') {
+    showToast(isRTL ? 'تم تبديل اللغة إلى العربية' : 'Switched to English', 'success');
+  }
+}
+
+// Apply the initial language (English by default). Call AFTER the DOM is built
+// and AFTER applyRoles() has injected the user name, so all hardcoded Arabic
+// strings get translated in one pass.
+function applyInitialLanguage() {
+  document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+  document.documentElement.lang = isRTL ? 'ar' : 'en';
+  if (!isRTL) translateDOM(document.body, true);
+}
