@@ -166,7 +166,7 @@
             <span id="menu-user-role">مدير بنك الدم</span>
           </div>
           <div class="user-dropdown-divider"></div>
-          <a class="user-dropdown-item" onclick="navigate('settings', document.querySelector('[data-nav=settings]')); toggleUserMenu()"><i class="fas fa-user-circle"></i> الملف الشخصي</a>
+          <a class="user-dropdown-item" onclick="navigate('profile', null); toggleUserMenu()"><i class="fas fa-user-circle"></i> الملف الشخصي</a>
           <a class="user-dropdown-item" onclick="navigate('settings', document.querySelector('[data-nav=settings]')); toggleUserMenu()"><i class="fas fa-cog"></i> الإعدادات</a>
           <div class="user-dropdown-divider"></div>
           <a class="user-dropdown-item text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
@@ -177,6 +177,80 @@
 
   <!-- =================== PAGES =================== -->
   <div class="page-content">
+
+    <!-- ===== PROFILE ===== -->
+    <div class="page" id="page-profile">
+      <div class="flex flex-between flex-center mb-20">
+        <div>
+          <h2 class="section-title">الملف الشخصي</h2>
+          <p class="section-sub">إدارة بيانات حسابك الشخصي والأمان</p>
+        </div>
+      </div>
+
+      <div class="card" style="max-width: 880px;">
+        <div class="card-body">
+          <div style="display:flex; align-items:center; gap:18px; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--border);">
+            <div class="avatar avatar-lg" style="background:linear-gradient(135deg,var(--primary),var(--accent)); width:72px; height:72px; font-size:26px; box-shadow: 0 8px 22px var(--primary-glow);">ع</div>
+            <div style="flex:1;">
+              <div style="font-size:20px; font-weight:800; color:var(--text-primary); margin-bottom:4px;" id="profile-full-name">د. عبدالرحمن عبدالله علي</div>
+              <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">مدير بنك الدم المركزي</div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <span class="badge badge-purple"><i class="fas fa-crown"></i> Super Admin</span>
+                <span class="badge badge-green"><i class="fas fa-check-circle"></i> حساب موثّق</span>
+                <span class="badge badge-blue"><i class="fas fa-shield-alt"></i> صلاحية كاملة</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group"><label>الاسم الكامل</label><input class="form-control" value="د. عبدالرحمن عبدالله علي"></div>
+            <div class="form-group"><label>البريد الإلكتروني</label><input class="form-control" value="a.abdullah@drop4life.gov"></div>
+            <div class="form-group"><label>اسم المستخدم (Login)</label><input class="form-control" value="admin" disabled></div>
+            <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" class="form-control" placeholder="*******"></div>
+            <div class="form-group"><label>رقم الهاتف</label><input class="form-control" value="+20 100 123 4567"></div>
+            <div class="form-group"><label>الرقم الوظيفي</label><input class="form-control" value="BB-ADM-001" disabled></div>
+            <div class="form-group form-full"><label>السيرة المهنية</label><textarea class="form-control" rows="3">استشاري أمراض الدم — أكثر من 15 سنة خبرة في إدارة بنوك الدم وعمليات نقل الدم.</textarea></div>
+          </div>
+
+          <div class="form-actions" style="margin-top: 24px;">
+            <button class="btn btn-ghost">إلغاء</button>
+            <button class="btn btn-primary" onclick="showToast('تم حفظ البيانات بنجاح', 'success')"><i class="fas fa-save"></i> حفظ التغييرات</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2 mt-16" style="margin-top:20px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fas fa-history"></i> آخر النشاطات</div></div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="timeline-item"><div class="timeline-dot tl-blue"><i class="fas fa-sign-in-alt"></i></div><div class="timeline-content"><h4>تسجيل دخول</h4><p>منذ دقائق · من Chrome على Windows</p></div></div>
+              <div class="timeline-item"><div class="timeline-dot tl-green"><i class="fas fa-check"></i></div><div class="timeline-content"><h4>اعتماد طلب #REQ-2851</h4><p>منذ ساعة</p></div></div>
+              <div class="timeline-item"><div class="timeline-dot tl-purple"><i class="fas fa-edit"></i></div><div class="timeline-content"><h4>تعديل بيانات الحساب</h4><p>منذ يومين</p></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="fas fa-lock"></i> الأمان</div></div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div><div style="font-size:13px; font-weight:600;">المصادقة الثنائية (2FA)</div><div style="font-size:12px; color:var(--text-muted)">طبقة حماية إضافية لحسابك</div></div>
+              <label class="toggle-switch"><input type="checkbox"><div class="toggle-slider"></div></label>
+            </div>
+            <div class="divider" style="margin:0;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div><div style="font-size:13px; font-weight:600;">تنبيه تسجيل دخول جديد</div><div style="font-size:12px; color:var(--text-muted)">إشعار عند الدخول من جهاز جديد</div></div>
+              <label class="toggle-switch"><input type="checkbox" checked><div class="toggle-slider"></div></label>
+            </div>
+            <div class="divider" style="margin:0;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div><div style="font-size:13px; font-weight:600;">تسجيل خروج تلقائي</div><div style="font-size:12px; color:var(--text-muted)">بعد 30 دقيقة من الخمول</div></div>
+              <label class="toggle-switch"><input type="checkbox" checked><div class="toggle-slider"></div></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- ===== DASHBOARD ===== -->
     <div class="page active" id="page-dashboard">

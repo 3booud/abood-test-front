@@ -169,10 +169,16 @@ function checkCompat() {
 // DARK MODE
 // ============================================
 function toggleDarkMode() {
-  document.body.classList.toggle('dark-mode');
-  const isDark = document.body.classList.contains('dark-mode');
-  localStorage.setItem('drop4life_theme', isDark ? 'dark' : 'light');
-  showToast(isDark ? 'تم تفعيل الوضع الليلي' : 'تم تفعيل الوضع الفاتح', 'success');
+  // Default is dark — we toggle the .light-mode class to override into light theme.
+  document.body.classList.toggle('light-mode');
+  const isLight = document.body.classList.contains('light-mode');
+  localStorage.setItem('drop4life_theme', isLight ? 'light' : 'dark');
+  const iconBtn = document.querySelector('.topbar-btn .fa-moon, .topbar-btn .fa-sun');
+  if (iconBtn) {
+    iconBtn.classList.toggle('fa-moon', !isLight);
+    iconBtn.classList.toggle('fa-sun', isLight);
+  }
+  showToast(isLight ? 'تم تفعيل الوضع الفاتح' : 'تم تفعيل الوضع الليلي', 'success');
 }
 
 // ============================================
@@ -566,8 +572,12 @@ async function loadAll() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Theme persistence
-  if (localStorage.getItem('drop4life_theme') === 'dark') document.body.classList.add('dark-mode');
+  // Theme persistence (dark is default → only opt-in to light)
+  if (localStorage.getItem('drop4life_theme') === 'light') {
+    document.body.classList.add('light-mode');
+    const moon = document.querySelector('.topbar-btn .fa-moon');
+    if (moon) { moon.classList.remove('fa-moon'); moon.classList.add('fa-sun'); }
+  }
 
   // Close modals on overlay click
   document.querySelectorAll('.modal-overlay').forEach(m => {

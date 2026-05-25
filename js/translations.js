@@ -521,8 +521,66 @@ const TRANSLATIONS = {
   // Sidebar nav
   "تحليلات ذكية": "AI Insights",
   "جديد": "New",
-  "8": "8",
-  "3": "3",
+
+  // ===== Server-side activity log strings (come back in English from DB) =====
+  "New Donation": "تبرع جديد",
+  "Hospital Delivery": "تسليم للمستشفى",
+  "Expiry Warning": "تحذير انتهاء صلاحية",
+  "Screening Results": "نتائج الفحص",
+  "Request Completed": "طلب مكتمل",
+  "New Donor Registered": "تم تسجيل متبرع جديد",
+  "Stock Added": "تم إضافة مخزون",
+  "New Blood Request": "طلب دم جديد",
+  "Request Approved": "تمت الموافقة على الطلب",
+  "Request Rejected": "تم رفض الطلب",
+  "Shipment Dispatched": "تم إطلاق الشحنة",
+  "Ahmed Mahmoud · O+ · Whole unit · Main Center": "أحمد محمود · O+ · وحدة كاملة · المركز الرئيسي",
+  "10 units A+ to Specialty Hospital · #REQ-2847": "10 وحدات A+ للمستشفى التخصصي · #REQ-2847",
+  "14 units B+ will expire within 3 days": "14 وحدة B+ ستنتهي خلال 3 أيام",
+  "8 samples processed · 7 valid, 1 rejected": "تم فحص 8 عينات · 7 صالحة، 1 مرفوضة",
+  "AB+ × 5 units delivered to Cairo Int.": "AB+ × 5 وحدات تم تسليمها للقاهرة الدولي",
+  "approved by admin": "اعتُمد بواسطة المدير",
+  "approved": "اعتُمد",
+
+  // ===== Insights titles from /api/insights =====
+  "Critical": "حرج",
+  "Critical: A+": "حرج: A+",
+  "Critical: A-": "حرج: A-",
+  "Critical: B+": "حرج: B+",
+  "Critical: B-": "حرج: B-",
+  "Critical: O+": "حرج: O+",
+  "Critical: O-": "حرج: O-",
+  "Critical: AB+": "حرج: AB+",
+  "Critical: AB-": "حرج: AB-",
+  "Expiring soon": "تنتهي قريباً",
+  "Pending urgent requests": "طلبات عاجلة معلقة",
+  "Donor pool": "قاعدة المتبرعين",
+  "Only 1 units left — launch a donation drive.": "متبقي وحدة واحدة فقط — أطلق حملة تبرع.",
+  "Only 2 units left — launch a donation drive.": "متبقي وحدتان فقط — أطلق حملة تبرع.",
+  "Only 3 units left — launch a donation drive.": "متبقي 3 وحدات فقط — أطلق حملة تبرع.",
+  "Only 4 units left — launch a donation drive.": "متبقي 4 وحدات فقط — أطلق حملة تبرع.",
+
+  // ===== Eligibility statuses from server =====
+  "eligible": "مؤهل",
+  "waiting": "في انتظار الدور",
+  "suspended": "موقوف",
+  "pending": "معلق",
+  "valid": "صالح",
+  "expiring": "قريب الانتهاء",
+  "whole": "كامل",
+  "plasma": "بلازما",
+  "platelets": "صفائح",
+  "red": "كريات حمراء",
+
+  // ===== Sample donor names (from seed data) =====
+  "Ahmed Mahmoud Ali": "أحمد محمود علي",
+  "Sara Fahmy Hassan": "سارة فهمي حسن",
+  "Mohamed Abdelrahman": "محمد عبدالرحمن",
+  "Nour Aldin Hamza": "نور الدين حمزة",
+  "Reem Tarek Yousef": "ريم طارق يوسف",
+  "Khaled Sami Ibrahim": "خالد سامي إبراهيم",
+  "Layla Saad Omar": "ليلى سعد عمر",
+  "Yassin Rami Adel": "ياسين رامي عادل",
 };
 
 // Build reverse dictionary
@@ -571,9 +629,22 @@ function toggleLanguage() {
   isRTL = !isRTL;
   document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
   document.documentElement.lang = isRTL ? 'ar' : 'en';
+  // Translate the static DOM (hardcoded text in HTML).
   translateDOM(document.body, !isRTL);
   if (typeof showToast === 'function') {
     showToast(isRTL ? 'تم تبديل اللغة إلى العربية' : 'Switched to English', 'success');
+  }
+  // Re-render dynamic content (tables, badges, timelines) in the new language.
+  // The data loaders check isRTL themselves, so a re-call refreshes labels.
+  if (typeof loadAll === 'function') {
+    loadAll().then(() => {
+      // Translate any leftover server-side English strings (activity titles, etc.)
+      if (isRTL) translateDOM(document.body, false);
+    }).catch(() => {});
+  }
+  if (typeof loadInsights === 'function'
+      && document.getElementById('page-insights')?.classList.contains('active')) {
+    loadInsights();
   }
 }
 
